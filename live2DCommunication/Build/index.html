@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Unity WebGL Player | vm</title>
+	<style>
+	</style>
+    <script type="text/javascript" src="js/webgazer.js"></script>
+    <script src="Build/UnityLoader.js"></script>
+
+    </style>
+
+    <script>
+    var gameInstance = UnityLoader.instantiate("gameContainer", "Build/Build.json",{Module: {TOTAL_STACK:6*1024*1024}});
+	</script>
+  </head>
+
+  <body>
+    <div id="gameContainer" style="width: 100%; height:100%;"></div>
+	<script>
+		webgazer.setGazeListener(function(data, elapsedTime) {
+			if (data == null) {
+				return;
+			}
+			var xprediction = data.x;
+			var yprediction = data.y;
+			document.cookie = "x="+xprediction;
+			document.cookie = "y="+yprediction;
+			var cookies = document.cookie;
+			//console.log("cookies = "+cookies);
+		}).begin();
+
+    function FaceDetected(){
+      var ready = this.webgazer.getTracker().predictionReady
+      gameInstance.SendMessage("GameObject", "CameraReady", ready.toString());
+    }
+    function HideVideo(){
+      webgazer.showVideo(false);
+      this.webgazer.showFaceOverlay(false);
+      this.webgazer.showFaceFeedbackBox(false);
+    }
+    function ShowVideo(){
+      webgazer.showVideo(true);
+      this.webgazer.showFaceOverlay(true);
+      this.webgazer.showFaceFeedbackBox(true);
+    }
+    function Pause(){
+      webgazer.pause();
+    }
+    function Resume(){
+      webgazer.resume();
+    }
+    function ClearData(){
+      webgazer.clearData();
+    }
+    function OffCalibration(){
+      webgazer.removeMouseEventListeners();
+    }
+    function OnCalibration(){
+      webgazer.addMouseEventListeners();
+    }
+    function HidePoint(){
+      webgazer.params.showGazeDot = false;
+      webgazer.showPredictionPoints(false);
+    }
+    function ShowPoint(){
+      webgazer.showPredictionPoints(true);
+    }
+	</script>
+  </body>
+</html>
