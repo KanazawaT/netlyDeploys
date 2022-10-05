@@ -73,6 +73,7 @@ const Peer = window.Peer;
       // mark peerId to find it later at peerLeave event
       newVideo.setAttribute('data-peer-id', stream.peerId);
       newVideo.addEventListener('click', ()=> {//クリックするとミュートする奴を書いたつもり
+        messages.textContent += '===ストリームをクリック===\n';
         this.muted = !this.muted;
       });
       remoteVideos.append(newVideo);
