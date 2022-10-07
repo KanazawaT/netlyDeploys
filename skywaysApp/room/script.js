@@ -74,7 +74,7 @@ const Peer = window.Peer;
       newVideo.setAttribute('data-peer-id', stream.peerId);
       newVideo.addEventListener('click', ()=> {//クリックするとミュートする奴を書いたつもり
         messages.textContent += '===ストリームをクリック===\n';
-        newVideo.muted = !newVideo.muted;
+        room.send(`/whisper ${peer.id} ${stream.peerId}`);
       });
       remoteVideos.append(newVideo);
       await newVideo.play().catch(console.error);
