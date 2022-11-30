@@ -68,5 +68,37 @@
       webgazer.showPredictionPoints(true);
     }
 	</script>
+  <script>
+    var gameInstance = UnityLoader.instantiate("gameContainer", "Build/Build.json");
+
+    function Start() {
+        SpeechRecognition = webkitSpeechRecognition || SpeechRecognition;
+        const recognition = new SpeechRecognition();
+
+        recognition.continuous = true;
+
+        recognition.onnomatch = function () {
+            window.alert("セットアップに失敗しました。ページの再読み込みをしてください。")
+        };
+
+        recognition.onerror = function () {
+            console.log("エラーが発生しました。再接続をします。")
+            Start();
+        };
+
+        recognition.onsoundend = function () {
+            console.log("音声入力が停止しました。再接続します。")
+            Start();
+        }
+
+        recognition.onresult = (event) => {
+            gameInstance.SendMessage('SceneManager', 'OnMessage', event.results[event.results.length - 1][0].transcript);
+        };
+
+        recognition.start();
+    }
+
+    Start();
+</script>
   </body>
 </html>
