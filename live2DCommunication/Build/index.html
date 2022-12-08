@@ -8,8 +8,11 @@
 	</style>
     <script type="text/javascript" src="js/webgazer.js"></script>
     <script src="Build/UnityLoader.js"></script>
-
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+  </style>
 
     <script>
     var gameInstance = UnityLoader.instantiate("gameContainer", "Build/Build.json",{Module: {TOTAL_STACK:6*1024*1024}});
@@ -18,17 +21,22 @@
 
   <body>
     <div id="gameContainer" style="width: 100%; height:100%;"></div>
+    <video id="input_video"></video>
 	<script>
-		webgazer.setGazeListener(function(data, elapsedTime) {
+		const videoElement = document.getElementById('input_video');
+
+    let lands;
+    webgazer.setGazeListener(function(data, elapsedTime) {
 			if (data == null) {
 				return;
 			}
 			var xprediction = data.x;
 			var yprediction = data.y;
-			document.cookie = "x="+xprediction;
-			document.cookie = "y="+yprediction;
+			document.cookie = "x="+Math.floor(xprediction);
+			document.cookie = "y="+Math.floor(yprediction);
+			document.cookie = "z="+Math.floor(lands[0].x * 100);
 			var cookies = document.cookie;
-			//console.log("cookies = "+cookies);
+			console.log("cookies = "+cookies);
 		}).begin();
 
     function FaceDetected(){
@@ -67,8 +75,40 @@
     function ShowPoint(){
       webgazer.showPredictionPoints(true);
     }
-	</script>
-  <script>
+	
+    
+    
+
+    function onResults(results) {
+      if (results.multiFaceLandmarks) {
+        for (const landmarks of results.multiFaceLandmarks) {
+          lands = landmarks;
+        }
+      }
+      
+    }
+    
+    const faceMesh = new FaceMesh({locateFile: (file) => {
+      return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
+    }});
+    faceMesh.setOptions({
+      maxNumFaces: 1,
+      refineLandmarks: true,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5
+    });
+    faceMesh.onResults(onResults);
+    
+    const camera = new Camera(videoElement, {
+      onFrame: async () => {
+        await faceMesh.send({image: videoElement});
+      },
+      width: 1280,
+      height: 720
+    });
+    camera.start();
+  </script>
+  <!--<script>
     var gameInstance = UnityLoader.instantiate("gameContainer", "Build/Build.json");
 
     function Start() {
@@ -99,6 +139,6 @@
     }
 
     Start();
-</script>
+</script>-->
   </body>
 </html>
