@@ -22,8 +22,11 @@
   <body>
     <div id="gameContainer" style="width: 100%; height:100%;"></div>
     <video id="input_video"></video>
+    <canvas class="output_canvas" width="1280px" height="720px"></canvas>
 	<script>
 		const videoElement = document.getElementById('input_video');
+    const canvasElement = document.getElementsByClassName('output_canvas')[0];
+    const canvasCtx = canvasElement.getContext('2d');
 
     let lands;
     webgazer.setGazeListener(function(data, elapsedTime) {
@@ -34,7 +37,7 @@
 			var yprediction = data.y;
 			document.cookie = "x="+Math.floor(xprediction);
 			document.cookie = "y="+Math.floor(yprediction);
-			document.cookie = "z="+Math.floor(lands[0].x * 100);
+			document.cookie = "z="+Math.floor((lands[76].y + lands[306].y - lands[0].y - lands[0].y) * 100);
 			var cookies = document.cookie;
 			console.log("cookies = "+cookies);
 		}).begin();
@@ -85,7 +88,26 @@
           lands = landmarks;
         }
       }
-      
+      canvasCtx.save();
+      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+      canvasCtx.drawImage(
+      results.image, 0, 0, canvasElement.width, canvasElement.height);
+      if (results.multiFaceLandmarks) {
+        for (const landmarks of results.multiFaceLandmarks) {
+          drawConnectors(canvasCtx, landmarks, FACEMESH_TESSELATION,
+                        {color: '#C0C0C070', lineWidth: 1});
+          drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYE, {color: '#FF3030'});
+          drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYEBROW, {color: '#FF3030'});
+          drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_IRIS, {color: '#FF3030'});
+          drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYE, {color: '#30FF30'});
+          drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYEBROW, {color: '#30FF30'});
+          drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_IRIS, {color: '#30FF30'});
+          drawConnectors(canvasCtx, landmarks, FACEMESH_FACE_OVAL, {color: '#E0E0E0'});
+          drawConnectors(canvasCtx, landmarks, FACEMESH_LIPS, {color: '#E0E0E0'});
+          drawConnectors(canvasCtx, landmarks, [[76,17],[17,306],[306,0],[0,76]],{color:'#ff0000'});
+        }
+      }
+      canvasCtx.restore();
     }
     
     const faceMesh = new FaceMesh({locateFile: (file) => {
