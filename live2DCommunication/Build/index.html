@@ -21,14 +21,14 @@
 
   <body>
     <div id="gameContainer" style="width: 100%; height:100%;"></div>
-    <video id="input_video"></video>
-    <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+    <!-- <video id="input_video"></video>
+    <canvas class="output_canvas" width="1280px" height="720px"></canvas>-->
 	<script>
-		const videoElement = document.getElementById('input_video');
-    const canvasElement = document.getElementsByClassName('output_canvas')[0];
-    const canvasCtx = canvasElement.getContext('2d');
+		//const videoElement = document.getElementById('input_video');
+    //const canvasElement = document.getElementsByClassName('output_canvas')[0];
+    //const canvasCtx = canvasElement.getContext('2d');
 
-    let lands;
+    //let lands;
     webgazer.setGazeListener(function(data, elapsedTime) {
 			if (data == null) {
 				return;
@@ -37,7 +37,7 @@
 			var yprediction = data.y;
 			document.cookie = "x="+Math.floor(xprediction);
 			document.cookie = "y="+Math.floor(yprediction);
-			document.cookie = "z="+Math.floor((lands[76].y + lands[306].y - lands[0].y - lands[0].y) * 100);
+			document.cookie = "z="+0;//Math.floor((lands[76].y + lands[306].y - lands[0].y - lands[0].y) * 100);
 			var cookies = document.cookie;
 			console.log("cookies = "+cookies);
 		}).begin();
@@ -82,7 +82,7 @@
     
     
 
-    function onResults(results) {
+    /*function onResults(results) {
       if (results.multiFaceLandmarks) {
         for (const landmarks of results.multiFaceLandmarks) {
           lands = landmarks;
@@ -128,7 +128,7 @@
       width: 1280,
       height: 720
     });
-    camera.start();
+    camera.start();*/
   </script>
   <!--<script>
     var gameInstance = UnityLoader.instantiate("gameContainer", "Build/Build.json");
